@@ -1,0 +1,2 @@
+export function formatCents(value, currency = 'MXN') { return new Intl.NumberFormat('es-MX',{ style:'currency', currency, minimumFractionDigits:2 }).format((Number(value)||0)/100) }
+export function parseToCents(value) { const normalized=String(value ?? '').trim().replace(/[$,\s]/g,''); if (!/^-?\d+(\.\d{0,2})?$/.test(normalized)) return null; const negative=normalized.startsWith('-'); const [whole, decimal='']=normalized.replace('-','').split('.'); const cents=Number(whole)*100+Number(decimal.padEnd(2,'0')); return negative?-cents:cents }
