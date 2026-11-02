@@ -40,15 +40,31 @@ ADMIN_BASE_CURRENCY=MXN
 
 On the next API request, the application creates that account (or promotes the matching existing account) to administrator. Updating `ADMIN_PASSWORD` updates that administrator’s password. The **Admin** button in the tracker opens `/admin/`, where administrators can create standard user accounts.
 
-## Historical expenses
+## Transactions that don’t change balances
 
-To enable report-only historical expenses on an existing database, run this migration once:
+To record income and expenses without linking them to an account, run this migration once on an existing database:
 
 ```sh
 mysql -u finance_app -p finance_tracker < api/database/migrations/002_historical_expenses.sql
 ```
 
-When adding an expense, select **Historical entry** if you do not know which account paid it. It is included in spending history and insights but never changes an account balance.
+When adding a transaction, select **Don’t change account balances**. It is included in your history and insights but never changes an account balance. To make that the default for every new transaction, turn on **Start every new transaction this way** in the same window; it is saved to your profile, so it applies on every device. That switch needs this migration:
+
+```sh
+mysql -u finance_app -p finance_tracker < api/database/migrations/004_skip_balances_default.sql
+```
+
+## Hiding expenses from insights
+
+To let individual income or expenses be left out of the Insights charts on an existing database, run this migration once:
+
+```sh
+mysql -u finance_app -p finance_tracker < api/database/migrations/003_exclude_from_insights.sql
+```
+
+If your database has a different name (for example on shared hosting), run only the `ALTER TABLE` statement from that file.
+
+On the Insights page, select a bar to see the transactions behind it and switch any of them off, or use **Hide from insights** when adding or editing a transaction. Hidden transactions still change account balances, still count on the Overview page, and still count toward net worth and card use; they are only left out of the spending and cash-flow charts.
 
 ## Test credit-card dates
 

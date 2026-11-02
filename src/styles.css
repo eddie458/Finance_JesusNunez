@@ -52,7 +52,7 @@ button { cursor: pointer }
 
 .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 26px }
 .stat-grid.insights { grid-template-columns: 1fr 2fr }
-.insight-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-bottom: 26px }
+.insight-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px }
 .insight-group-control { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 10px; padding: 22px }
 .insight-group-control select { width: min(260px, 100%); border: 1px solid var(--color-line); border-radius: 12px; background: #fffaf1; padding: 10px 12px; color: var(--color-ink); font-weight: 700 }
 .stat-card { padding: 22px }
@@ -114,6 +114,78 @@ button { cursor: pointer }
 .filter-row select, .filter-row input { border: 1px solid var(--color-line); border-radius: 12px; background: #fffaf1; padding: 10px 12px; font-weight: 700 }
 
 .chart-box { height: 300px }
+.chart-box.short { height: 250px }
+.insight-stack { display: grid; gap: 20px }
+.insight-stack > * { min-width: 0 }
+.insight-detail { scroll-margin: 20px }
+.segmented { display: inline-flex; gap: 4px; padding: 5px; margin: -8px 0 24px; border-radius: 18px; background: #f1e2cb; box-shadow: inset 3px 3px 7px rgba(170, 120, 70, 0.18), inset -2px -2px 5px rgba(255, 255, 255, 0.6) }
+.segmented button { border: 0; background: none; padding: 9px 18px; border-radius: 13px; font-weight: 800; color: #8a6a4d; white-space: nowrap; transition: background .15s, box-shadow .15s }
+.segmented button:hover { color: #4a3928 }
+.segmented button[aria-selected="true"] { background: var(--color-panel); color: #4a3928; box-shadow: 3px 3px 8px rgba(170, 120, 70, 0.22) }
+.segmented button:focus-visible { outline: 3px solid #ffd2b8; outline-offset: 1px }
+.chart-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px }
+.chart-table th, .chart-table td { white-space: nowrap }
+.chart-actions { display: flex; flex: none; align-items: center; gap: 8px }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 6px; padding: 0; list-style: none; font-size: 12px; font-weight: 700; color: #8a6a4d }
+.chart-legend li { display: inline-flex; align-items: center; gap: 6px }
+.legend-key { flex: none; display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--key) }
+.legend-key.line { width: 14px; height: 3px; border-radius: 2px }
+.chart-tooltip { min-width: 150px; padding: 10px 12px; border: 1px solid #ecdcc0; border-radius: 12px; background: #fffaf1; box-shadow: 0 10px 24px rgba(90, 55, 25, 0.18); font-size: 12px; color: #8a6a4d }
+.chart-tooltip-label { margin-bottom: 4px; font-weight: 800; color: #4a3928 }
+.chart-tooltip-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; white-space: nowrap }
+.chart-tooltip-row strong { font-size: 13px; color: #4a3928 }
+.stat-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 2px 0 18px }
+.stat-strip > div { min-width: 0; padding: 12px 14px; border-radius: 14px; background: #fff3e4 }
+.stat-strip .stat-value { margin: 5px 0 3px; font-size: 21px; overflow-wrap: anywhere }
+.trend-note { display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; font-size: 12px; font-weight: 700; color: var(--color-muted) }
+.trend-note svg { flex: none }
+.trend-note.good { color: #2f7a4e }
+.trend-note.bad { color: #b8432a }
+.net-worth-figure { margin: 2px 0 14px }
+.net-worth-figure .stat-value { margin: 0 0 4px }
+.category-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 24px; align-items: start }
+.donut-wrap { position: relative; height: 200px }
+.donut-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none }
+.donut-center strong { font: 800 18px var(--font-display); color: #4a3928 }
+.donut-center span { font-size: 11px; font-weight: 700; color: var(--color-muted) }
+.share-list { display: grid; gap: 8px; margin: 12px 0 0; padding: 0; list-style: none }
+.share-list li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 8px; font-size: 13px; font-weight: 700 }
+.share-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.share-pct { min-width: 36px; text-align: right; font-size: 12px; color: var(--color-muted) }
+.empty.compact { padding: 14px 0 }
+.card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px }
+.credit-use-figure { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px }
+.use-value { margin-right: 8px; font: 800 32px/1 var(--font-display); color: #4a3928 }
+.use-label { font-size: 12px; font-weight: 700; color: var(--color-muted) }
+.status-chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; white-space: nowrap }
+.status-chip.good { background: #e6f5eb; color: #2f7a4e }
+.status-chip.warning { background: #fff1d2; color: #8a5a00 }
+.status-chip.critical { background: #fbe0de; color: #a8322f }
+.meter { height: 12px; margin: 12px 0 8px; border-radius: 99px; background: var(--track); overflow: hidden }
+.meter span { display: block; height: 100%; border-radius: 99px; background: var(--fill) }
+.meter-labels { display: flex; justify-content: space-between; gap: 12px; font-size: 12px; font-weight: 700; color: #8a6a4d }
+.payment-box { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; padding: 12px 14px; border-radius: 14px; background: #fff3e4; color: #8a5a3a }
+.payment-box svg { flex: none; margin-top: 1px }
+.payment-box strong { display: block; font-size: 14px; color: #4a3928 }
+.payment-box.paid { background: #edf6ef; color: #2f7a4e }
+.payment-box.overdue { background: #fbe4e1; color: #a8322f }
+.insight-row-error { grid-column: 1 / -1; margin-top: -6px }
+.insight-detail-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px }
+.insight-detail-head .icon-button { flex: none }
+.insight-list { display: grid }
+.insight-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 14px; padding: 13px 0; border-top: 1px dashed var(--color-line) }
+.insight-row:first-child { border-top: 0 }
+.insight-row .row-title { overflow-wrap: anywhere }
+.insight-row.is-hidden .insight-row-text, .insight-row.is-hidden .money { opacity: .45 }
+.insight-row.is-hidden .money { text-decoration: line-through }
+.switch { position: relative; display: inline-block; flex: none; width: 46px; height: 26px; padding: 0; border: 0; border-radius: 99px; background: #ead9c0; box-shadow: inset 2px 2px 5px rgba(160, 110, 60, 0.25); transition: background .2s }
+.switch span { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fffaf1; box-shadow: 2px 2px 5px rgba(120, 70, 30, 0.3); transition: transform .2s }
+.switch[aria-checked="true"] { background: linear-gradient(160deg, #ffa477, var(--color-primary)) }
+.switch[aria-checked="true"] span { transform: translateX(20px) }
+.switch:disabled { opacity: .6; cursor: progress }
+.switch:focus-visible, .option-default:focus-visible { outline: 3px solid #ffd2b8; outline-offset: 2px }
+.switch.small { width: 34px; height: 20px }
+.switch.small span { width: 14px; height: 14px }
 
 /* auth */
 .auth { min-height: 100vh; display: grid; grid-template-columns: 1.1fr .9fr }
@@ -148,11 +220,16 @@ button { cursor: pointer }
 .transaction-filters .field input, .transaction-filters .field select { height: 42px }
 .clear-filters { height: 42px; padding: 0 4px }
 .table-actions { display: flex; gap: 3px; justify-content: flex-end }
-.historical-toggle { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 10px; padding: 11px 12px; border: 1px solid #d7e8d5; border-radius: 9px; background: #f3f8f1; color: #27523e; cursor: pointer }
-.historical-toggle input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--color-forest) }
-.historical-toggle span { display: grid; gap: 2px; font-size: 13px }
-.historical-toggle small { color: var(--color-muted); font-size: 12px; line-height: 1.35 }
-.badge.historical { background: #f7eee8; color: #8b5b42 }
+.option-toggle { grid-column: 1 / -1; display: grid; gap: 10px; padding: 12px 14px; border: 1px solid #f0dcc0; border-radius: 14px; background: #fff3e4; color: #6b4a33 }
+.option-check { display: flex; align-items: flex-start; gap: 10px; cursor: pointer }
+.option-check input { flex: none; width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--color-primary-dark) }
+.option-check > span { display: grid; gap: 2px; font-size: 13px }
+.option-check small { color: var(--color-muted); font-size: 12px; line-height: 1.35 }
+.option-default { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 0 0 26px; border: 0; border-top: 1px dashed #efd9bb; background: none; color: #6b4a33; font-size: 12px; font-weight: 800; text-align: left }
+.option-default:disabled { opacity: .6; cursor: progress }
+.option-default[aria-checked="true"] .switch { background: linear-gradient(160deg, #ffa477, var(--color-primary)) }
+.option-default[aria-checked="true"] .switch span { transform: translateX(14px) }
+.hidden-flag { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; color: var(--color-primary-dark); vertical-align: bottom }
 .category-field { gap: 7px }
 .category-select, .new-category { display: flex; gap: 8px; align-items: center }
 .category-select select, .new-category input { min-width: 0; flex: 1 }
@@ -205,6 +282,14 @@ button { cursor: pointer }
   .admin-page .table { min-width: 530px }
   .shell main { padding-bottom: 126px }
   .transaction-panel { padding: 20px }
+  .insight-detail { scroll-margin-bottom: 110px }
+  .segmented { display: flex; width: 100% }
+  .segmented button { flex: 1; padding: 9px 6px; font-size: 13px }
+  .stat-strip { grid-template-columns: 1fr; gap: 8px }
+  .stat-strip > div { padding: 10px 12px }
+  .stat-strip .stat-value { font-size: 19px }
+  .category-layout, .card-grid { grid-template-columns: 1fr }
+  .chart-card, .credit-use { padding: 20px }
   .transaction-filters { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 22px }
   .transaction-filters .field { width: 100%; min-width: 0 }
   .transaction-filters .field input, .transaction-filters .field select { width: 100%; height: 46px }

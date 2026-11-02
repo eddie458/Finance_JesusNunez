@@ -12,9 +12,11 @@ final class Auth {
 
     public static function currentUser(PDO $pdo): array {
         $id = self::userId();
-        $statement = $pdo->prepare('SELECT id, email, base_currency, role FROM users WHERE id = ?');
+        $statement = $pdo->prepare('SELECT * FROM users WHERE id = ?');
         $statement->execute([$id]);
-        return $statement->fetch() ?: Http::fail('Authentication required.', 401);
+        $user = $statement->fetch() ?: Http::fail('Authentication required.', 401);
+        // Reading * keeps sign-in working on databases that have not run the 004 preferences migration yet.
+        return ['id' => $user['id'], 'email' => $user['email'], 'base_currency' => $user['base_currency'], 'role' => $user['role'], 'skip_balances_by_default' => (int)($user['skip_balances_by_default'] ?? 0)];
     }
 
     public static function requireAdmin(PDO $pdo): array {

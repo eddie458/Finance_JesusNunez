@@ -7,6 +7,7 @@ CREATE TABLE users (
   password_hash VARCHAR(255) NOT NULL,
   base_currency CHAR(3) NOT NULL DEFAULT 'MXN',
   role ENUM('user','admin') NOT NULL DEFAULT 'user',
+  skip_balances_by_default BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
@@ -47,6 +48,7 @@ CREATE TABLE transactions (
   amount_cents BIGINT NOT NULL,
   occurred_on DATE NOT NULL,
   is_historical BOOLEAN NOT NULL DEFAULT FALSE,
+  exclude_from_insights BOOLEAN NOT NULL DEFAULT FALSE,
   from_account_id BIGINT UNSIGNED NULL,
   to_account_id BIGINT UNSIGNED NULL,
   category_id BIGINT UNSIGNED NULL,

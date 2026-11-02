@@ -16,6 +16,14 @@ final class BillingCycle {
         $due = self::dayInMonth((int)$dueMonth->format('Y'), (int)$dueMonth->format('n'), $dueDay);
         return ['start' => $start->format('Y-m-d'), 'end' => $close->format('Y-m-d'), 'due_on' => $due->format('Y-m-d')];
     }
+    /** Returns the statement period still open on $asOf, which closes on the next statement day after it. */
+    public static function currentCycle(int $statementDay, int $dueDay, DateTimeImmutable $asOf): array {
+        self::validateDays($statementDay, $dueDay);
+        $today = $asOf->setTime(0, 0);
+        $close = self::dayInMonth((int)$today->format('Y'), (int)$today->format('n'), $statementDay);
+        if ($close <= $today) { $next = $today->modify('first day of next month'); $close = self::dayInMonth((int)$next->format('Y'), (int)$next->format('n'), $statementDay); }
+        return self::latestClosedCycle($statementDay, $dueDay, $close);
+    }
     private static function dayInMonth(int $year, int $month, int $day): DateTimeImmutable {
         $lastDay = (int)(new DateTimeImmutable(sprintf('%04d-%02d-01', $year, $month)))->format('t');
         return new DateTimeImmutable(sprintf('%04d-%02d-%02d', $year, $month, min($day, $lastDay)));
