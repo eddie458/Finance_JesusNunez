@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { X } from 'lucide-react'
+import { Download, X } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useInsightTransactions } from '../../api/insights'
 import { updateTransaction } from '../../api/transactions'
 import { formatCents } from '../../lib/money'
 import { shortDate } from '../../lib/dates'
+import { exportTransactions } from '../../lib/exportTransactions'
 
 // Shared by every review list so a switch shows the same state wherever its transaction appears.
 export function useReview() {
@@ -22,7 +23,7 @@ function ReviewRow({ transaction:t, review, currency }) {
 export function ReviewPanel({ title, description, transactions, loading, onClose, review, currency }) {
   const ref=useRef(null)
   useEffect(()=>{if(!loading)ref.current?.scrollIntoView({behavior:'smooth',block:'nearest'})},[title,loading])
-  return <section className="card insight-detail" ref={ref}><div className="insight-detail-head"><div><div className="section-title">{title}</div><p className="section-description">{description}</p></div><button type="button" className="icon-button" title="Close" aria-label="Close" onClick={onClose}><X size={18}/></button></div>{loading?<div className="empty">Loading transactions…</div>:transactions.length?<div className="insight-list">{transactions.map(t=><ReviewRow key={t.id} transaction={t} review={review} currency={currency}/>)}</div>:<div className="empty">Nothing recorded here.</div>}</section>
+  return <section className="card insight-detail" ref={ref}><div className="insight-detail-head"><div><div className="section-title">{title}</div><p className="section-description">{description}</p></div><div className="chart-actions">{transactions.length>0&&<button type="button" className="icon-button" title="Export these transactions as CSV" aria-label="Export these transactions as CSV" onClick={()=>exportTransactions(transactions,{name:[title],currency})}><Download size={16}/></button>}<button type="button" className="icon-button" title="Close" aria-label="Close" onClick={onClose}><X size={18}/></button></div></div>{loading?<div className="empty">Loading transactions…</div>:transactions.length?<div className="insight-list">{transactions.map(t=><ReviewRow key={t.id} transaction={t} review={review} currency={currency}/>)}</div>:<div className="empty">Nothing recorded here.</div>}</section>
 }
 
 export function HiddenList({ review, currency }) {
