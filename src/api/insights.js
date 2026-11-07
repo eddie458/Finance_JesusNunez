@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'; import { request } from './client'
-export const useInsights=filters=>useQuery({queryKey:['insights',filters],queryFn:()=>request('/api/insights/summary?'+new URLSearchParams(filters))})
+import { keepPreviousData, useQuery } from '@tanstack/react-query'; import { request } from './client'
+export const useInsights=filters=>useQuery({queryKey:['insights',filters],queryFn:()=>request('/api/insights/summary?'+new URLSearchParams(filters)),placeholderData:keepPreviousData})
 export const useInsightTransactions=(filters,enabled=true)=>useQuery({queryKey:['insights','transactions',filters],queryFn:()=>request('/api/insights/transactions?'+new URLSearchParams(filters)),enabled})
 export const useCashflow=filters=>useQuery({queryKey:['insights','cashflow',filters],queryFn:()=>request('/api/insights/cashflow?'+new URLSearchParams(filters))})
 export const useCategoryTrends=filters=>useQuery({queryKey:['insights','category-trends',filters],queryFn:()=>request('/api/insights/category-trends?'+new URLSearchParams(filters))})

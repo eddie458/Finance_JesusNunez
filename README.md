@@ -64,11 +64,11 @@ mysql -u finance_app -p finance_tracker < api/database/migrations/003_exclude_fr
 
 If your database has a different name (for example on shared hosting), run only the `ALTER TABLE` statement from that file.
 
-On the Insights page, select a bar to see the transactions behind it and switch any of them off, or use **Hide from insights** when adding or editing a transaction. Hidden transactions still change account balances, still count on the Overview page, and still count toward net worth and card use; they are only left out of the spending and cash-flow charts.
+On the Insights page, select a month or category to see the transactions behind it and switch any of them off, or use **Hide from insights** when adding or editing a transaction. Hidden transactions still change account balances, still count on the Overview page, and still count toward net worth and card use; they are only left out of the spending and cash-flow charts.
 
 ## Exporting transactions
 
-On the Transactions page, set any filters and select **Export CSV**. The file holds every transaction that matches, not just the rows on screen. On the Insights page, select a bar and use the download button in the list that opens to export the transactions behind it, including any hidden from insights.
+On the Transactions page, set any filters and select **Export CSV**. The page opens on the current month, so choose **All months** to see or export everything. The file holds every transaction that matches, not just the rows on screen. On the Insights page, select a month or category and use the download button in the list that opens to export the transactions behind it, including any hidden from insights.
 
 Amounts are signed like the ledger: expenses are negative, income is positive, and transfers are positive. Filter on the **Type** column before adding up a column that includes transfers.
 

@@ -1,22 +1,32 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Table2, BarChart3 } from 'lucide-react'
-import { formatCents } from '../../lib/money'
+import { useCategoryTrends } from '../../api/insights'
+import { daysInMonth, localToday, shiftMonth } from '../../lib/dates'
+import { OTHER, SERIES, categoryColors } from '../../lib/palette'
 
-// Categorical slots, in this fixed order, pass the dataviz palette checks against the card surface:
-// worst adjacent CVD ΔE 20.6, normal-vision ΔE 21.3, every slot at least 3:1 contrast.
-export const SERIES = ['#dd6431', '#2a78d6', '#3f9464', '#6250d6', '#e34948']
-export const OTHER = '#cdbba3'
-export const CHART = { surface:'#fdf6ea', grid:'#efe3cf', axis:'#d9c6aa', tick:'#a4886f', cursor:'#f6ead8' }
-export const COLORS = { expenses:SERIES[0], income:SERIES[1], saved:SERIES[2], netWorth:SERIES[3], context:'#c7b49b' }
-export const axisTick = { fontSize:12, fill:CHART.tick }
+export { OTHER, SERIES }
+export const CHART = { surface:'#ffffff', grid:'#ece7f6', axis:'#c9c0d6', tick:'#6b5c78', cursor:'#f1eef8' }
+export const ON_LILAC = { surface:'#cdbdfb', grid:'rgba(36,17,47,.12)', axis:'rgba(36,17,47,.32)', tick:'#46356b', cursor:'rgba(36,17,47,.08)' }
+export const COLORS = { expenses:SERIES[0], income:SERIES[1], saved:'#24112f', netWorth:'#24112f', context:'#9c90a8' }
+export const axisTick = { fontSize:12.5, fontWeight:500, fill:CHART.tick }
 
 const symbols = { MXN:'$', USD:'$', EUR:'€' }
-export const compactMoney = (value, currency) => { const n=Number(value)||0; return `${n<0?'-':''}${symbols[String(currency||'MXN').toUpperCase()]||''}${new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:1}).format(Math.abs(n))}` }
-export const plainMoney = (cents, currency) => formatCents(cents, currency).replace(/\s[A-Z]{3}$/, '')
+export const compactMoney = (value, currency) => { const n=Number(value)||0; return `${n<0?'−':''}${symbols[String(currency||'MXN').toUpperCase()]||''}${new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:1}).format(Math.abs(n))}` }
 
-export function ChartCard({ title, description, actions, table, children, className='' }) {
+// Round numbers for a value axis, from zero to just past the highest value.
+export function axisTicks(highest) {
+  if (highest<=0) return [0,1]
+  const rough=highest/4; const power=10**Math.floor(Math.log10(rough)); const step=[1,2,2.5,5,10].map(m=>m*power).find(s=>s>=rough)
+  return Array.from({length:Math.ceil(highest/step)+1},(_,i)=>i*step)
+}
+
+// A year of category totals decides which category owns which color, on every screen.
+export const trendFilters = thisMonth => ({ from:`${shiftMonth(thisMonth,-11)}-01`, to:`${thisMonth}-${daysInMonth(thisMonth)}` })
+export function useCategoryColors() { const {data}=useCategoryTrends(trendFilters(localToday().slice(0,7))); return useMemo(()=>({...categoryColors(data??[]),ready:Boolean(data)}),[data]) }
+
+export function ChartCard({ title, description, legend, summary, table, children, className='' }) {
   const [showTable,setShowTable]=useState(false)
-  return <section className={`card chart-card ${className}`}><div className="chart-head"><div><div className="section-title">{title}</div>{description&&<p className="section-description">{description}</p>}</div><div className="chart-actions">{actions}{table&&<button type="button" className="icon-button" title={showTable?'Show chart':'Show as table'} aria-label={showTable?'Show chart':'Show as table'} aria-pressed={showTable} onClick={()=>setShowTable(v=>!v)}>{showTable?<BarChart3 size={16}/>:<Table2 size={16}/>}</button>}</div></div>{showTable&&table?<DataTable {...table}/>:children}</section>
+  return <section className={`tile chart-card ${className}`}><div className="chart-head"><div className="chart-title"><h2>{title}</h2>{description&&<p className="section-description">{description}</p>}{legend}</div><div className={`chart-side${summary?' with-summary':''}`}>{summary}{table&&<div className="chart-actions"><button type="button" className="icon-button" title={showTable?'Show chart':'Show as table'} aria-label={showTable?'Show chart':'Show as table'} aria-pressed={showTable} onClick={()=>setShowTable(v=>!v)}>{showTable?<BarChart3 size={17}/>:<Table2 size={17}/>}</button></div>}</div></div>{showTable&&table?<DataTable {...table}/>:children}</section>
 }
 
 export function DataTable({ columns, rows }) {
