@@ -2,3 +2,4 @@ export function formatCents(value, currency = 'MXN') { const code=String(currenc
 export function parseToCents(value) { const normalized=String(value ?? '').trim().replace(/[$,\s]/g,''); if (!/^-?\d+(\.\d{0,2})?$/.test(normalized)) return null; const negative=normalized.startsWith('-'); const [whole, decimal='']=normalized.replace('-','').split('.'); const cents=Number(whole)*100+Number(decimal.padEnd(2,'0')); return negative?-cents:cents }
 // The app runs on one currency, so screens show its symbol and leave the code out. A currency with no symbol keeps its code.
 export const plainMoney = (cents, currency) => formatCents(cents, currency).replace(/\s(MXN|USD|EUR)$/, '').replace('-', '−')
+export const signedMoney = (cents, currency) => `${cents>0?'+':''}${plainMoney(cents,currency)}`

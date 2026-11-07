@@ -86,6 +86,14 @@ if (preg_match('#^/api/accounts/(\d+)$#',$path,$m) && $method === 'PATCH') {
     } catch(Throwable $e) {if($pdo->inTransaction())$pdo->rollBack();throw $e;}
     Http::respond(accountForUser($pdo,$a['id'],$userId));
 }
+// A new balance is recorded as a one-sided transfer of the difference: earlier balances and net worth keep their history, and transfers never count as spending or income.
+if (preg_match('#^/api/accounts/(\d+)/balance$#',$path,$m) && $method === 'POST') {
+    $a=accountForUser($pdo,(int)$m[1],$userId); $b=Http::body(); $target=filter_var($b['balance_cents']??null,FILTER_VALIDATE_INT); $date=$b['occurred_on']??'';
+    if($target===false || !DateTimeImmutable::createFromFormat('!Y-m-d',$date)) Http::fail('A balance in whole cents and a date are required.');
+    $change=$target-(int)array_column(accountList($pdo,$userId),'balance_cents','id')[$a['id']];
+    if($change!==0) $pdo->prepare("INSERT INTO transactions (user_id,type,amount_cents,occurred_on,from_account_id,to_account_id,merchant) VALUES (?,'transfer',?,?,?,?,'Balance adjustment')")->execute([$userId,abs($change),$date,$change<0?$a['id']:null,$change>0?$a['id']:null]);
+    Http::respond(['balance_cents'=>$target,'change_cents'=>$change]);
+}
 if (preg_match('#^/api/accounts/(\d+)$#',$path,$m) && $method === 'DELETE') {
     $a=accountForUser($pdo,(int)$m[1],$userId);
     $s=$pdo->prepare('SELECT id FROM transactions WHERE user_id=? AND (from_account_id=? OR to_account_id=?) LIMIT 1');

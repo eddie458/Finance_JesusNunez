@@ -6,8 +6,10 @@ import { useAccounts } from '../api/accounts'
 import { useCategories, useNetWorth } from '../api/insights'
 import { useMe } from '../api/auth'
 import { plainMoney } from '../lib/money'
+import { isAdjustment } from '../lib/adjustment'
 import { dayHeading, daysInMonth, localToday, monthLong, monthName, monthRange } from '../lib/dates'
 import { exportTransactions } from '../lib/exportTransactions'
+import { AdjustmentModal } from '../components/BalanceModal'
 import { TransactionModal } from '../components/TransactionModal'
 import { SignedAmount, TypeChip, transactionMovement, transactionName } from '../components/TransactionRow'
 import { Amount, PillSelect } from '../components/ui'
@@ -23,14 +25,14 @@ function byDay(transactions) {
 }
 
 function TransactionItem({ transaction:t, currency, onEdit, onDelete }) {
-  const hidden=Number(t.exclude_from_insights)
+  const hidden=Number(t.exclude_from_insights); const adjustment=isAdjustment(t)
   return <div className="tx-row">
-    <button type="button" className="tx-main" title="Edit transaction" onClick={()=>onEdit(t)}>
+    <button type="button" className="tx-main" title={adjustment?'View adjustment':'Edit transaction'} onClick={()=>onEdit(t)}>
       <TypeChip type={t.type}/>
       <span className="tx-text"><span className="row-title">{transactionName(t)}</span><span className="row-meta">{transactionMovement(t)}{hidden?<span className="hidden-flag"><EyeOff size={12} aria-hidden="true"/>Hidden from insights</span>:null}</span></span>
       <SignedAmount transaction={t} currency={currency}/>
     </button>
-    <div className="table-actions"><button type="button" className="icon-button" title="Edit transaction" aria-label={`Edit ${transactionName(t)}`} onClick={()=>onEdit(t)}><Pencil size={16}/></button><button type="button" className="icon-button" title="Delete transaction" aria-label={`Delete ${transactionName(t)}`} onClick={()=>onDelete(t.id)}><Trash2 size={16}/></button></div>
+    <div className="table-actions">{!adjustment&&<button type="button" className="icon-button" title="Edit transaction" aria-label={`Edit ${transactionName(t)}`} onClick={()=>onEdit(t)}><Pencil size={16}/></button>}<button type="button" className="icon-button" title="Delete transaction" aria-label={`Delete ${transactionName(t)}`} onClick={()=>onDelete(t.id)}><Trash2 size={16}/></button></div>
   </div>
 }
 
@@ -71,6 +73,6 @@ export function Transactions({ onAdd, month:openingMonth }) {
       {hasNextPage&&<div className="load-more"><span className="row-meta">Showing {transactions.length} of {total} transactions</span><button type="button" className="button secondary" disabled={isFetchingNextPage} onClick={()=>fetchNextPage()}>{isFetchingNextPage?'Loading…':'Load more'}</button></div>}
       {error&&<p className="error load-more-error">{error.message}</p>}
     </>:<div className="tile empty empty-action"><span>No transactions match this view.</span>{month&&<button type="button" className="button secondary" onClick={()=>setMonth('')}>Show all months</button>}</div>}
-    {editing&&<TransactionModal transaction={editing} onClose={()=>setEditing(null)} onDelete={remove}/>}
+    {editing&&(isAdjustment(editing)?<AdjustmentModal transaction={editing} currency={currency} onClose={()=>setEditing(null)} onDelete={remove}/>:<TransactionModal transaction={editing} onClose={()=>setEditing(null)} onDelete={remove}/>)}
   </>
 }

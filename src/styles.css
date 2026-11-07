@@ -223,6 +223,10 @@ h1, h2, h3, p { margin: 0 }
 .bank-top > div { min-width: 0 }
 .bank-name { font: 700 22px/1.2 var(--display); letter-spacing: -.025em; overflow-wrap: anywhere }
 .bank-type { margin-top: 2px; font-size: 14px; font-weight: 500; color: var(--muted) }
+.bank-update { flex: none; height: 36px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--plum); color: #fff; font-size: 13px; font-weight: 600; transition: background .15s }
+.bank-update:hover { background: #3a1f4a }
+.tile-plum .bank-update { background: var(--butter); color: var(--plum) }
+.tile-plum .bank-update:hover { background: #ffe08f }
 .bank-balance { margin-top: auto; padding-top: 22px }
 .bank-balance .amount { font-size: min(38px, calc(100cqw / (var(--chars) * .58))) }
 .bank-meta { margin-top: 8px; font-size: 14px; line-height: 1.45; color: var(--muted) }

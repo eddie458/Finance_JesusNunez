@@ -4,6 +4,7 @@ import { useAccounts } from '../api/accounts'
 import { useTransactions } from '../api/transactions'
 import { useNetWorth } from '../api/insights'
 import { useMe } from '../api/auth'
+import { adjustedAccount, isAdjustment } from '../lib/adjustment'
 import { plainMoney } from '../lib/money'
 import { dayShort, daysInMonth, localToday, monthLong, monthName, shiftMonth } from '../lib/dates'
 import { monthSummary } from '../lib/monthSummary'
@@ -37,7 +38,7 @@ function keptNote(income, spent, currency) {
   return income>=spent?`You kept ${plainMoney(income-spent,currency)}`:`You spent ${plainMoney(spent-income,currency)} more than you earned`
 }
 
-const activityMeta = t => `${dayShort(t.occurred_on)} · ${t.type==='transfer'?`From ${t.from_account_name||'outside'}`:transactionKind(t)}`
+const activityMeta = t => `${dayShort(t.occurred_on)} · ${isAdjustment(t)?adjustedAccount(t):t.type==='transfer'?`From ${t.from_account_name||'outside'}`:transactionKind(t)}`
 
 export function Dashboard({ goTo, onAdd }) {
   const today=localToday(); const thisMonth=today.slice(0,7); const [month,setMonth]=useState(thisMonth)

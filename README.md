@@ -54,6 +54,12 @@ When adding a transaction, select **Don’t change account balances**. It is inc
 mysql -u finance_app -p finance_tracker < api/database/migrations/004_skip_balances_default.sql
 ```
 
+## Updating an account balance
+
+On the **Accounts** page, **Update balance** sets what an account holds now. The difference is saved as a **Balance adjustment** dated today, so earlier balances and net worth keep their history, and the change never counts as spending or income. It appears in **Transactions** as a transfer, and deleting it there undoes the change. For a credit card, enter the amount you owe.
+
+**Edit** still changes the opening balance, which shifts the account’s whole history.
+
 ## Hiding expenses from insights
 
 To let individual income or expenses be left out of the Insights charts on an existing database, run this migration once:
