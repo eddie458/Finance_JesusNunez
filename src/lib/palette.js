@@ -1,9 +1,11 @@
-// Six category colors in a fixed order, and any two can end up side by side, because a color follows its category while petals sort by amount.
+// Six category colors in a fixed order, and any two can end up side by side, because a color follows its category while charts sort by amount.
 // Across all pairs they pass the dataviz palette checks: worst CVD ΔE 11.1, normal-vision ΔE 21.3. Each is at least 3:1 on plum and on white,
 // except gold on white (2.1:1), which always appears with a legend and a table view. Gold is also brighter than the checks ask for on plum,
 // because any darker and it matches the orange for people with red-green color blindness.
 export const SERIES = ['#de5200', '#009af9', '#e055bd', '#d4ac00', '#7941db']
 export const OTHER = '#3b9168'
+// Plum reads better on the bright colors and white on the deep one.
+export const INK = { '#7941db':'#ffffff', '#3b9168':'#24112f', '#e055bd':'#24112f', '#de5200':'#24112f', '#009af9':'#24112f', '#d4ac00':'#24112f' }
 
 // The biggest five categories keep slots 1–5 everywhere they appear, and the rest share Other, including a category that is itself called Other.
 export function categoryColors(trendRows) {

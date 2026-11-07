@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { flowerBounds, petals } from '../lib/flower'
-import { plainMoney } from '../lib/money'
-
-// Plum reads better on the bright petals and white on the deep ones.
-const INK = { '#7941db':'#ffffff', '#3b9168':'#24112f', '#e055bd':'#24112f', '#de5200':'#24112f', '#009af9':'#24112f', '#d4ac00':'#24112f' }
+import { INK } from '../lib/palette'
+import { SpendingLegend } from './SpendingLegend'
 
 export function Flower({ items, surface='#24112f', active=null, onActive, title }) {
   const flower=petals(items)
@@ -16,14 +14,7 @@ export function Flower({ items, surface='#24112f', active=null, onActive, title 
 
 const describe = items => { const total=items.reduce((s,i)=>s+i.cents,0); return `Spending as a flower. Each petal is a category and its area shows how much it cost: ${items.map(i=>`${i.name} ${Math.round(i.cents*100/total)} percent`).join(', ')}.` }
 
-// The legend names every petal, so the flower never relies on color or size alone.
 export function SpendingFlower({ items, currency, surface, shares=false }) {
-  const [active,setActive]=useState(null); const total=items.reduce((s,i)=>s+i.cents,0)
-  return <div className="flower-layout"><Flower items={items} surface={surface} active={active} onActive={setActive} title={describe(items)}/><ul className="flower-legend">{items.map(i=><li key={i.name} className={active===i.name?'active':''} onPointerEnter={()=>setActive(i.name)} onPointerLeave={()=>setActive(null)}><span className="dot" style={{'--key':i.color}}/><span className="name" title={i.name}>{i.name}</span><span className="value">{plainMoney(i.cents,currency)}</span>{shares&&<span className="share">{Math.round(i.cents*100/total)}%</span>}</li>)}</ul></div>
-}
-
-const BUD = [1,1,1,1,1,1].map((cents,i)=>({name:String(i),cents,color:'transparent'}))
-
-export function EmptyFlower({ surface, children }) {
-  return <div className="flower-empty"><Flower items={BUD} surface={surface}/><p>{children}</p></div>
+  const [active,setActive]=useState(null)
+  return <div className="spend-layout"><Flower items={items} surface={surface} active={active} onActive={setActive} title={describe(items)}/><SpendingLegend items={items} currency={currency} active={active} onActive={setActive} shares={shares}/></div>
 }

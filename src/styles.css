@@ -111,9 +111,9 @@ h1, h2, h3, p { margin: 0 }
 .ov-balance-head { display: flex; align-items: center; justify-content: space-between; gap: 12px }
 .ov-spent { grid-column: 1 / span 4; grid-row: 2; padding: 22px 26px }
 .ov-income { grid-column: 5 / span 3; grid-row: 2; padding: 22px 26px }
-.ov-flower { grid-column: 8 / span 5; grid-row: 1 / span 2; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; padding: 28px }
-.ov-flower h2 { font-size: 26px; letter-spacing: -.03em }
-.ov-flower .section-description { font-size: 15px; font-weight: 400 }
+.ov-pie { grid-column: 8 / span 5; grid-row: 1 / span 2; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; padding: 28px }
+.ov-pie h2 { font-size: 26px; letter-spacing: -.03em }
+.ov-pie .section-description { font-size: 15px; font-weight: 400 }
 .ov-recent { grid-column: 1 / span 7; grid-row: 3; padding: 22px 28px 10px }
 .ov-wallet { grid-column: 8 / span 5; grid-row: 3; padding: 22px 26px 26px }
 .tile-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px }
@@ -140,25 +140,27 @@ h1, h2, h3, p { margin: 0 }
 .empty.compact { padding: 14px 0 }
 .empty-action { display: grid; justify-items: center; gap: 14px }
 
-/* flower */
-.flower-layout { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px }
-.flower { flex: 1 1 230px; display: block; min-width: 0; max-width: 300px; aspect-ratio: 1; overflow: visible }
-.flower-legend { flex: 1 1 170px; min-width: 0; margin: 0; padding: 0; list-style: none; font-size: 14px }
-.flower-legend li { display: flex; align-items: center; gap: 8px; min-height: 34px; margin: 0 -8px; padding: 0 8px; border-radius: 10px; transition: background .15s }
-.flower-legend li.active { background: var(--legend-hover, rgba(255, 255, 255, .1)) }
-.flower-legend .dot { flex: none; width: 11px; height: 11px; border-radius: 50%; background: var(--key) }
-.flower-legend .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
-.flower-legend .value { color: var(--muted); font-variant-numeric: tabular-nums }
-.flower-legend .share { min-width: 34px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums }
+/* spending charts */
+.spend-layout { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 18px }
+.flower, .pie { flex: 1 1 230px; display: block; min-width: 0; max-width: 300px; aspect-ratio: 1; overflow: visible }
+.spend-legend { flex: 1 1 170px; min-width: 0; margin: 0; padding: 0; list-style: none; font-size: 14px }
+.spend-legend li { display: flex; align-items: center; gap: 8px; min-height: 34px; margin: 0 -8px; padding: 0 8px; border-radius: 10px; transition: background .15s }
+.spend-legend li.active { background: var(--legend-hover, rgba(255, 255, 255, .1)) }
+.spend-legend .dot { flex: none; width: 11px; height: 11px; border-radius: 50%; background: var(--key) }
+.spend-legend .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.spend-legend .value { color: var(--muted); font-variant-numeric: tabular-nums }
+.spend-legend .share { min-width: 34px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums }
 .petal { transform-box: fill-box; transform-origin: 0% 50%; animation: bloom .7s var(--ease) backwards; animation-delay: calc(var(--i) * 70ms); transition: opacity .15s; cursor: default }
+.slice { animation: bloom .7s var(--ease) backwards; animation-delay: calc(var(--i) * 70ms); transition: opacity .15s; cursor: default }
 @keyframes bloom { from { opacity: 0; transform: scale(.12) } }
-.flower.has-active .petal { opacity: .38 }
-.flower.has-active .petal.active { opacity: 1 }
-.flower-label { font-family: var(--display); font-weight: 700; pointer-events: none }
-.flower-label.opening { animation: fade .3s .5s backwards }
-.flower-empty { display: grid; justify-items: center; gap: 10px; width: 100%; padding: 8px 0; text-align: center; color: var(--muted); font-size: 15px }
-.flower-empty .flower { flex: none; width: min(200px, 60%) }
-.flower-empty .petal { fill: rgba(255, 255, 255, .08) }
+.flower.has-active .petal, .pie.has-active .slice { opacity: .38 }
+.flower.has-active .petal.active, .pie.has-active .slice.active { opacity: 1 }
+.flower-label, .pie-label { font-family: var(--display); font-weight: 700; pointer-events: none }
+.flower-label.opening, .pie-label.opening { animation: fade .3s .5s backwards }
+.pie-label { stroke-width: 5px; stroke-linejoin: round; paint-order: stroke }
+.pie-empty { display: grid; justify-items: center; gap: 10px; width: 100%; padding: 8px 0; text-align: center; color: var(--muted); font-size: 15px }
+.pie-empty .pie { flex: none; width: min(200px, 60%) }
+.pie-empty circle { fill: rgba(255, 255, 255, .08) }
 @keyframes fade { from { opacity: 0 } }
 
 /* wallet */
@@ -332,7 +334,7 @@ h1, h2, h3, p { margin: 0 }
 .category-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: center; margin-top: 8px }
 .category-share { display: grid; gap: 10px; --legend-hover: var(--ground) }
 .category-share .flower { flex: 0 1 180px }
-.category-share .flower-legend { flex: 1 1 250px }
+.category-share .spend-legend { flex: 1 1 250px }
 .category-month { font-size: 15px; font-weight: 600 }
 
 /* cash flow and cards */
@@ -428,12 +430,12 @@ h1, h2, h3, p { margin: 0 }
 .success { padding: 14px 18px; border-radius: 20px; background: var(--mint); font-size: 15px; font-weight: 600 }
 
 @media (max-width: 1180px) {
-  .ov-balance, .ov-flower { grid-column: 1 / -1; grid-row: auto }
+  .ov-balance, .ov-pie { grid-column: 1 / -1; grid-row: auto }
   .ov-spent { grid-column: 1 / span 6; grid-row: auto }
   .ov-income { grid-column: 7 / span 6; grid-row: auto }
   .ov-recent { grid-column: 1 / span 7; grid-row: auto }
   .ov-wallet { grid-column: 8 / span 5; grid-row: auto }
-  .ov-flower .flower-layout { justify-content: space-around }
+  .ov-pie .spend-layout { justify-content: space-around }
   .t-4, .t-5, .t-7, .t-8 { grid-column: 1 / -1 }
   .flow-stat.t-4 { grid-column: span 4 }
   .bank-card.t-4 { grid-column: span 6 }
@@ -473,7 +475,7 @@ h1, h2, h3, p { margin: 0 }
   .pill-tabs button { flex: 1; height: 46px; padding: 0 8px; font-size: 14px }
   .ov-balance { min-height: 260px; padding: 22px 22px 12px }
   .ov-spent, .ov-income { padding: 20px 22px }
-  .ov-flower, .ov-recent, .ov-wallet { padding: 22px }
+  .ov-pie, .ov-recent, .ov-wallet { padding: 22px }
   .ov-recent { padding-bottom: 10px }
   .tx-hero { min-height: 0; margin: calc(-1 * max(14px, env(safe-area-inset-top))) -14px 0; padding: calc(env(safe-area-inset-top) + 34px) 22px 20px; border-radius: 0 0 32px 32px }
   .tx-hero h1 { font-size: 30px }

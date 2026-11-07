@@ -11,7 +11,7 @@ import { monthSummary } from '../lib/monthSummary'
 import { netWorthPoints } from '../lib/netWorth'
 import { foldCategories } from '../lib/palette'
 import { useCategoryColors } from '../components/insights/chartKit'
-import { EmptyFlower, SpendingFlower } from '../components/Flower'
+import { EmptyPie, SpendingPie } from '../components/Pie'
 import { Sparkline } from '../components/Sparkline'
 import { Wallet } from '../components/Wallet'
 import { SignedAmount, TypeChip, transactionKind, transactionName } from '../components/TransactionRow'
@@ -44,7 +44,7 @@ export function Dashboard({ goTo, onAdd }) {
   const today=localToday(); const thisMonth=today.slice(0,7); const [month,setMonth]=useState(thisMonth)
   const {data:user}=useMe(); const currency=user?.base_currency
   const {data:accounts=[],isLoading}=useAccounts(); const {data:recent}=useTransactions(); const {data:netWorth}=useNetWorth(); const {rows,shown,loading}=useMonthRows(month); const colors=useCategoryColors()
-  const summary=monthSummary(rows,shown,today); const petals=colors.ready?foldCategories(summary.categories,colors):[]
+  const summary=monthSummary(rows,shown,today); const spending=colors.ready?foldCategories(summary.categories,colors):[]
   const total=accounts.reduce((sum,a)=>sum+Number(a.balance_cents),0); const active=accounts.filter(a=>!Number(a.is_archived)); const isThisMonth=shown===thisMonth; const shownName=monthLong(shown); const activity=(recent??[]).slice(0,5)
   const months=Array.from({length:MONTHS},(_,i)=>shiftMonth(thisMonth,-i)).map(m=>({value:m,label:monthName(m)}))
   return <>
@@ -57,9 +57,9 @@ export function Dashboard({ goTo, onAdd }) {
       </section>
       <section className="tile tile-butter ov-spent fit"><p className="stat-label">{isThisMonth?'Spent this month':`Spent in ${shownName}`}</p><p className="stat-value"><Amount cents={summary.spent} currency={currency} loading={loading}/></p><p className="stat-note">{loading?'\u00a0':changeNote(summary.change,currency)||`${summary.count} expense${summary.count===1?'':'s'}`}</p></section>
       <section className="tile tile-mint ov-income fit"><p className="stat-label">{isThisMonth?'Income this month':`Income in ${shownName}`}</p><p className="stat-value"><Amount cents={summary.income} currency={currency} loading={loading}/></p><p className="stat-note">{loading?'\u00a0':keptNote(summary.income,summary.spent,currency)}</p></section>
-      <section className="tile tile-plum ov-flower">
+      <section className="tile tile-plum ov-pie">
         <div><h2>Where {shownName} went</h2><p className="section-description">{summary.count?`${plainMoney(summary.spent,currency)} across ${summary.count} expense${summary.count===1?'':'s'}`:loading?'\u00a0':'Nothing to show yet'}</p></div>
-        {petals.length?<SpendingFlower key={shown} items={petals} currency={currency} surface="#24112f"/>:<EmptyFlower surface="#24112f">{loading||!colors.ready?'Adding up your month…':`Nothing spent in ${shownName}.`}</EmptyFlower>}
+        {spending.length?<SpendingPie key={shown} items={spending} currency={currency} surface="#24112f"/>:<EmptyPie>{loading||!colors.ready?'Adding up your month…':`Nothing spent in ${shownName}.`}</EmptyPie>}
       </section>
       <section className="tile ov-recent">
         <div className="tile-head"><h2>Recent activity</h2>{activity.length>0&&<button type="button" className="text-link" onClick={()=>goTo('transactions',{month:''})}>See all</button>}</div>

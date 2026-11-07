@@ -4,6 +4,7 @@ import { monthSummary } from './monthSummary.js'
 import { netWorthPoints } from './netWorth.js'
 import { categoryColors, foldCategories, OTHER, SERIES } from './palette.js'
 import { flowerBounds, petals } from './flower.js'
+import { shareLabel, slices } from './pie.js'
 import { plainMoney } from './money.js'
 import { dayHeading } from './dates.js'
 
@@ -64,6 +65,28 @@ test('keeps the smallest petals visible and the frame around every petal', () =>
   const [x,y,w,h]=flowerBounds(flower).split(' ').map(Number)
   assert.equal(w,h); assert.ok(y<=-flower[0].length); assert.ok(x<0&&x+w>0)
   assert.doesNotThrow(()=>flowerBounds(petals([{name:'only',cents:5}])))
+})
+
+test('gives each slice its share of the circle, clockwise from 12 o’clock', () => {
+  const [big,small]=slices([{name:'a',cents:300},{name:'b',cents:100}])
+  assert.equal(big.sweep,270); assert.equal(small.sweep,90)
+  assert.equal(big.d,'M0 0L0 -100A100 100 0 1 1 -100 0Z'); assert.equal(small.d,'M0 0L-100 0A100 100 0 0 1 0 -100Z')
+  assert.equal(big.label,'75%'); assert.equal(big.labelled,true)
+})
+
+test('keeps tiny categories visible and the circle whole', () => {
+  const pie=slices([{name:'a',cents:1000000},{name:'b',cents:1},{name:'c',cents:1}])
+  assert.equal(pie[1].sweep,4); assert.equal(pie[1].labelled,false); assert.equal(pie[1].label,'<1%')
+  assert.ok(Math.abs(pie.reduce((sum,s)=>sum+s.sweep,0)-360)<1e-9)
+})
+
+test('draws a lone category as a whole circle with its label in the middle', () => {
+  const [only]=slices([{name:'only',cents:5}])
+  assert.ok(only.d.startsWith('M0 -100A')); assert.equal(only.label,'100%'); assert.ok(Math.abs(only.labelX)<1&&Math.abs(only.labelY)<1)
+})
+
+test('never rounds a share into looking like all or nothing', () => {
+  assert.equal(shareLabel(.47),'<1%'); assert.equal(shareLabel(99.53),'>99%'); assert.equal(shareLabel(100),'100%'); assert.equal(shareLabel(33.4),'33%')
 })
 
 test('shows the symbol without the currency code', () => {
