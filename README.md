@@ -40,6 +40,18 @@ ADMIN_BASE_CURRENCY=MXN
 
 On the next API request, the application creates that account (or promotes the matching existing account) to administrator. Updating `ADMIN_PASSWORD` updates that administrator’s password. The **Admin** button in the tracker opens `/admin/`, where administrators can create standard user accounts.
 
+## Staying signed in
+
+A sign-in lasts a week from your last visit, so you stay signed in as long as you open the tracker at least once a week. **Sign out** ends it right away.
+
+Sign-ins are kept in the database’s `sessions` table, which the API creates the first time it needs it. If its database user isn’t allowed to create tables, run this migration once:
+
+```sh
+mysql -u finance_app -p finance_tracker < api/database/migrations/005_sessions.sql
+```
+
+Until that table exists, sign-ins use PHP’s session files, which many hosts clear after 24 idle minutes.
+
 ## Transactions that don’t change balances
 
 To record income and expenses without linking them to an account, run this migration once on an existing database:

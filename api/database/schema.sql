@@ -65,3 +65,11 @@ CREATE TABLE transactions (
   INDEX idx_txn_user_from (user_id, from_account_id),
   INDEX idx_txn_user_to (user_id, to_account_id)
 ) ENGINE=InnoDB;
+
+-- Sign-ins. The API also creates this table the first time it needs it.
+CREATE TABLE sessions (
+  id VARCHAR(256) CHARACTER SET ascii COLLATE ascii_bin NOT NULL PRIMARY KEY,
+  data BLOB NOT NULL,
+  last_active INT UNSIGNED NOT NULL,
+  INDEX idx_sessions_last_active (last_active)
+) ENGINE=InnoDB;

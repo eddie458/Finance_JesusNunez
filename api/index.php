@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/src/Database.php'; require __DIR__ . '/src/Http.php'; require __DIR__ . '/src/Auth.php'; require __DIR__ . '/src/AdminBootstrap.php'; require __DIR__ . '/src/BillingCycle.php'; require __DIR__ . '/src/TransactionImport.php';
+require __DIR__ . '/src/Database.php'; require __DIR__ . '/src/Http.php'; require __DIR__ . '/src/Auth.php'; require __DIR__ . '/src/AdminBootstrap.php'; require __DIR__ . '/src/BillingCycle.php'; require __DIR__ . '/src/TransactionImport.php'; require __DIR__ . '/src/SessionStore.php';
 
 header('Access-Control-Allow-Credentials: true');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
