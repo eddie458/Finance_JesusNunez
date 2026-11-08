@@ -56,12 +56,12 @@ test('folds a category called Other into the shared Other', () => {
 
 test('scales petal area with the amount', () => {
   const [big,small]=petals([{name:'a',cents:400},{name:'b',cents:100}])
-  assert.equal(big.length/small.length,2); assert.equal(big.share,80); assert.equal(big.rotate,-90); assert.equal(small.rotate,90)
+  assert.equal(big.length/small.length,2); assert.equal(big.rotate,-90); assert.equal(small.rotate,90)
 })
 
 test('keeps the smallest petals visible and the frame around every petal', () => {
   const flower=petals([{name:'a',cents:1000000},{name:'b',cents:1},{name:'c',cents:1}])
-  assert.ok(flower[1].length>=22); assert.equal(flower[1].labelled,false)
+  assert.ok(flower[1].length>=22)
   const [x,y,w,h]=flowerBounds(flower).split(' ').map(Number)
   assert.equal(w,h); assert.ok(y<=-flower[0].length); assert.ok(x<0&&x+w>0)
   assert.doesNotThrow(()=>flowerBounds(petals([{name:'only',cents:5}])))

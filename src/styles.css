@@ -153,11 +153,10 @@ h1, h2, h3, p { margin: 0 }
 .petal { transform-box: fill-box; transform-origin: 0% 50%; animation: bloom .7s var(--ease) backwards; animation-delay: calc(var(--i) * 70ms); transition: opacity .15s; cursor: default }
 .slice { animation: bloom .7s var(--ease) backwards; animation-delay: calc(var(--i) * 70ms); transition: opacity .15s; cursor: default }
 @keyframes bloom { from { opacity: 0; transform: scale(.12) } }
-.flower.has-active .petal, .pie.has-active .slice { opacity: .38 }
-.flower.has-active .petal.active, .pie.has-active .slice.active { opacity: 1 }
-.flower-label, .pie-label { font-family: var(--display); font-weight: 700; pointer-events: none }
-.flower-label.opening, .pie-label.opening { animation: fade .3s .5s backwards }
-.pie-label { stroke-width: 5px; stroke-linejoin: round; paint-order: stroke }
+.pie.has-active .slice { opacity: .38 }
+.pie.has-active .slice.active { opacity: 1 }
+.pie-label { font-family: var(--display); font-weight: 700; stroke-width: 5px; stroke-linejoin: round; paint-order: stroke; pointer-events: none }
+.pie-label.opening { animation: fade .3s .5s backwards }
 .pie-empty { display: grid; justify-items: center; gap: 10px; width: 100%; padding: 8px 0; text-align: center; color: var(--muted); font-size: 15px }
 .pie-empty .pie { flex: none; width: min(200px, 60%) }
 .pie-empty circle { fill: rgba(255, 255, 255, .08) }
@@ -332,7 +331,7 @@ h1, h2, h3, p { margin: 0 }
 /* category tile */
 .category-layout { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: center; margin-top: 8px }
 .category-share { display: grid; gap: 10px; --legend-hover: var(--ground) }
-.category-share .flower { flex: 0 1 180px }
+.category-share .pie { flex: 0 1 180px }
 .category-share .spend-legend { flex: 1 1 250px }
 .category-month { font-size: 15px; font-weight: 600 }
 
