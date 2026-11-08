@@ -425,7 +425,9 @@ h1, h2, h3, p { margin: 0 }
 .import-problems { margin-top: 16px; padding: 16px 18px; border-radius: 22px; background: var(--danger-soft); color: #8c1d18; font-size: 14px; line-height: 1.4 }
 .import-problems h3 { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700 }
 .import-problems ul { display: grid; gap: 10px; margin: 12px 0; padding: 0; list-style: none }
-.import-problems li strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+/* A long description wraps instead of widening the list past the box. */
+.import-problems li { min-width: 0; overflow-wrap: anywhere }
+.import-problems li strong { display: block }
 .import-problems p + p { margin-top: 4px }
 .import-section h3 { margin: 22px 0 2px; font-size: 16px; font-weight: 700 }
 .import-list { margin: 0; padding: 0; list-style: none }
