@@ -74,9 +74,36 @@ On the Insights page, select a month or category to see the transactions behind 
 
 ## Exporting transactions
 
-On the Transactions page, set any filters and select **Export CSV**. The page opens on the current month, so choose **All months** to see or export everything. The file holds every transaction that matches, not just the rows on screen. On the Insights page, select a month or category and use the download button in the list that opens to export the transactions behind it, including any hidden from insights.
+On the Transactions page, set any filters, select **Export**, and choose **CSV** or **JSON**. The page opens on the current month, so choose **All months** to see or export everything. The file holds every transaction that matches, not just the rows on screen. On the Insights page, select a month or category and use the download button in the list that opens to export the transactions behind it as CSV, including any hidden from insights.
 
-Amounts are signed like the ledger: expenses are negative, income is positive, and transfers are positive. Filter on the **Type** column before adding up a column that includes transfers.
+In a CSV, amounts are signed like the ledger: expenses are negative, income is positive, and transfers are positive. Filter on the **Type** column before adding up a column that includes transfers.
+
+## Editing transactions in a file
+
+Export as **JSON**, edit the file in a text editor or with a script, then select **Import** on the Transactions page and choose the file. Fluent checks the whole file first and lists every change it would make. Nothing is saved until you select **Import** in that list.
+
+- An entry with an `id` updates that transaction, and only the fields that differ from your ledger. An entry can list just the fields to change, for example `{ "id": 412, "category": "Groceries" }`.
+- An entry without an `id` is added as a new transaction, and needs at least `date`, `type` and `amount`. If it looks like one already in your ledger (same day, amount, accounts and description), the check says so, which catches a file imported twice.
+- Transactions you leave out of the file stay as they are. Importing never deletes anything.
+- If any entry has a problem, nothing is imported. The check lists each problem with the entry's position in the file and its id.
+- Everything in the file is saved together, or nothing is. If your ledger changes between the check and the import, Fluent checks the file again and shows the new result instead of saving.
+- Import a recent export. If you edit a transaction in the app after exporting, the file still has the old values, so the check lists them as changes and importing would undo your edit.
+
+| Field | Value |
+| --- | --- |
+| `id` | The transaction's number. Leave it out for a new transaction. |
+| `date` | The day, written like `2026-11-05`. |
+| `type` | `expense`, `income` or `transfer`. |
+| `amount` | A positive number with up to two decimals, like `45.5`. The type says which way the money moves. |
+| `description` | Text, or `null`. |
+| `category` | A category name, or `null` for Uncategorized. Only expenses have one. A name that doesn't exist yet becomes a new category. |
+| `from_account` | The account the money leaves, for an expense or a transfer. It has to be an existing account's name. |
+| `to_account` | The account the money enters, for income or a transfer. |
+| `note` | Text, or `null`. |
+| `changes_balances` | `false` for a transaction recorded without an account. |
+| `hidden_from_insights` | `true` to leave an expense or income out of the Insights charts. |
+
+Account and category names are matched without regard to capitalization. The `accounts` and `categories` lists at the top of an export are there to copy names from, and importing ignores them. Balance adjustments can be deleted in the app but not edited, so an import refuses changes to them. A file can hold up to 10,000 transactions.
 
 ## Test credit-card dates
 
@@ -84,8 +111,9 @@ Amounts are signed like the ledger: expenses are negative, income is positive, a
 php api/tests/BillingCycleTest.php
 ```
 
-## Test the CSV export
+## Test the exports and imports
 
 ```sh
 npm test
+php api/tests/TransactionImportTest.php
 ```

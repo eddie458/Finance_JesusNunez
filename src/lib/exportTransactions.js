@@ -18,6 +18,6 @@ export const transactionColumns = currency => [
   {label:'Hidden from insights',value:t=>yesNo(Number(t.exclude_from_insights))},
 ]
 
-export const exportFilename = parts => `${['transactions',...parts].map(slug).filter(Boolean).join('-')}.csv`
+export const exportFilename = (parts, extension='csv') => `${['transactions',...parts].map(slug).filter(Boolean).join('-')}.${extension}`
 
 export const exportTransactions = (transactions, { name=[], currency }) => downloadCsv(exportFilename(name),toCsv(transactionColumns(currency),transactions))

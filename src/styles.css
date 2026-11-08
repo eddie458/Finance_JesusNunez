@@ -189,16 +189,15 @@ h1, h2, h3, p { margin: 0 }
 .tx-hero .stat-label { margin-top: 20px }
 .tx-hero .hero-number { margin-top: 4px }
 .tx-hero .hero-number .amount { font-size: min(72px, calc(100cqw / (var(--chars) * .58))) }
-.tx-export { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; padding: 0 20px; border: 0; border-radius: 999px; background: rgba(36, 17, 47, .12); font-size: 15px; font-weight: 600; white-space: nowrap; transition: background .15s, transform .15s var(--ease) }
-.tx-export:hover { background: rgba(36, 17, 47, .2) }
-.tx-export:active { transform: scale(.97) }
-.tx-export:disabled { opacity: .55; cursor: not-allowed; transform: none }
+.tx-file { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 52px; padding: 0 20px; border: 0; border-radius: 999px; background: rgba(36, 17, 47, .12); font-size: 15px; font-weight: 600; white-space: nowrap; transition: background .15s, transform .15s var(--ease) }
+.tx-file:hover { background: rgba(36, 17, 47, .2) }
+.tx-file:active { transform: scale(.97) }
+.tx-file:disabled { opacity: .55; cursor: not-allowed; transform: none }
 .tx-summary { display: flex; flex-direction: column; justify-content: center; padding: 22px 26px }
 .filter-pills { display: flex; flex-wrap: wrap; align-items: center; gap: 8px }
 .filter-pills .pill-select { height: 46px }
 .filter-pills .pill-select select { font-size: 14px }
 .clear-filters { margin-left: 6px; font-size: 14px }
-.export-error { padding: 0 8px }
 .tx-days { display: grid; gap: 6px; transition: opacity .15s }
 .tx-days.is-stale { opacity: .55 }
 .day-heading { padding: 10px 8px 6px; font-size: 14px; font-weight: 600; color: #5b4a68 }
@@ -398,6 +397,54 @@ h1, h2, h3, p { margin: 0 }
 .option-default[aria-checked="true"] .switch { background: var(--plum) }
 .option-default[aria-checked="true"] .switch span { transform: translateX(14px) }
 .label-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px }
+
+/* exporting and importing files */
+.file-choices { display: grid; gap: 10px }
+.file-choice { display: flex; align-items: center; gap: 16px; width: 100%; padding: 16px 18px; border: 2px solid transparent; border-radius: 24px; background: var(--ground); text-align: left; transition: border-color .15s, background .15s, transform .15s var(--ease) }
+.file-choice:hover { border-color: var(--plum); background: #fff }
+.file-choice:active { transform: scale(.98) }
+.file-choice:disabled { border-color: transparent; background: var(--ground); opacity: .6; cursor: progress; transform: none }
+.file-choice > span:last-child { display: grid; gap: 2px; min-width: 0 }
+.file-choice strong { font-size: 17px; font-weight: 700 }
+.file-choice small { font-size: 14px; line-height: 1.35; color: var(--muted) }
+.file-icon { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 18px; background: var(--mint) }
+.file-icon.json { background: var(--lilac) }
+.drop-zone { display: grid; justify-items: center; gap: 4px; width: 100%; padding: 34px 20px; border: 2px dashed #c3b8d6; border-radius: 26px; background: var(--ground); text-align: center; transition: border-color .15s, background .15s }
+.drop-zone:hover, .drop-zone.is-dragging { border-color: var(--plum); background: #fff }
+.drop-zone:disabled { cursor: progress }
+.drop-zone strong { margin-top: 8px; font-size: 17px; font-weight: 700 }
+.drop-zone small { font-size: 14px; color: var(--muted) }
+.import-rules { display: grid; gap: 6px; margin: 18px 0 0; padding-left: 20px; list-style: disc; font-size: 14px; line-height: 1.4; color: var(--muted) }
+.import-modal code { font-size: .95em; font-weight: 600 }
+.import-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px }
+.import-stat { display: grid; gap: 2px; padding: 14px 16px; border-radius: 22px; background: var(--ground) }
+.import-stat.update { background: var(--butter) }
+.import-stat.add { background: var(--mint) }
+.import-stat strong { font: 700 30px/1.05 var(--display); letter-spacing: -.03em }
+.import-stat span { font-size: 14px; font-weight: 600 }
+.import-problems { margin-top: 16px; padding: 16px 18px; border-radius: 22px; background: var(--danger-soft); color: #8c1d18; font-size: 14px; line-height: 1.4 }
+.import-problems h3 { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 700 }
+.import-problems ul { display: grid; gap: 10px; margin: 12px 0; padding: 0; list-style: none }
+.import-problems li strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.import-problems p + p { margin-top: 4px }
+.import-section h3 { margin: 22px 0 2px; font-size: 16px; font-weight: 700 }
+.import-list { margin: 0; padding: 0; list-style: none }
+.import-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; column-gap: 12px; padding: 12px 0; border-top: 1px solid var(--line) }
+.import-item:first-child { border-top: 0 }
+.import-item-text { min-width: 0 }
+.import-changes { grid-column: 2 / -1; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; margin: 8px 0 0; font-size: 14px }
+.import-changes div { display: contents }
+.import-changes dt { font-weight: 600; color: var(--muted) }
+.import-changes dd { margin: 0; overflow-wrap: anywhere }
+.import-changes del { color: var(--muted) }
+.import-changes ins { font-weight: 600; text-decoration: none }
+.import-warning { grid-column: 2 / -1; justify-self: start; display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 4px 10px; border-radius: 999px; background: var(--butter); font-size: 13px; font-weight: 600 }
+.import-more { margin-top: 4px; font-size: 14px }
+.import-same { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding: 14px 16px; border-radius: 22px; background: var(--mint); font-weight: 600 }
+.import-done { display: grid; justify-items: center; gap: 8px; padding: 6px 0 0; text-align: center }
+.done-mark { display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 4px; border-radius: 50%; background: var(--mint) }
+.import-done h3 { font: 700 24px/1.2 var(--display); letter-spacing: -.02em }
+.import-done p { max-width: 400px; margin: 0 }
 .new-category { display: flex; align-items: center; gap: 8px }
 .new-category input { flex: 1; min-width: 0 }
 .add-category { padding: 0; border: 0; background: none; font-size: 13px; font-weight: 600; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px }
@@ -483,8 +530,8 @@ h1, h2, h3, p { margin: 0 }
   .tx-hero .hero-number .amount { font-size: min(50px, calc(100cqw / (var(--chars) * .58))) }
   .tx-hero-head { flex-wrap: nowrap; margin-bottom: 0 }
   .tx-hero-head .head-actions { width: auto }
-  .tx-export { width: 46px; height: 46px; padding: 0 }
-  .tx-export span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%) }
+  .tx-file { width: 46px; height: 46px; padding: 0 }
+  .tx-file span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%) }
   .filter-pills { flex-wrap: nowrap; gap: 8px; margin: 0 -14px; padding: 0 14px 2px; overflow-x: auto; scrollbar-width: none }
   .filter-pills::-webkit-scrollbar { display: none }
   .filter-pills .pill-select { height: 44px }
@@ -535,6 +582,10 @@ h1, h2, h3, p { margin: 0 }
 @media (max-width: 640px) {
   .bento { display: flex; flex-direction: column }
   .column-label-rest { display: none }
+  .import-stats { gap: 8px }
+  .import-stat { padding: 12px }
+  .import-stat strong { font-size: 26px }
+  .import-stat span { font-size: 13px; white-space: nowrap }
 }
 
 /* The dock's four 52px items and add button need 352px, so below that the items share what's left. */
@@ -542,6 +593,9 @@ h1, h2, h3, p { margin: 0 }
   .rail { gap: 4px; padding: 0 8px }
   .rail nav { gap: 0; min-width: 0; margin-right: 0 }
   .rail-item { flex: 1 1 0; width: auto; min-width: 0 }
+  .tx-hero h1 { font-size: 27px } /* keeps Export and Import beside the title */
+  .tx-hero-head, .tx-hero-head .head-actions { gap: 8px }
+  .import-stat { padding: 12px 10px }
 }
 
 @media (prefers-reduced-motion: reduce) {

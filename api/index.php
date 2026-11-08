@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/src/Database.php'; require __DIR__ . '/src/Http.php'; require __DIR__ . '/src/Auth.php'; require __DIR__ . '/src/AdminBootstrap.php'; require __DIR__ . '/src/BillingCycle.php';
+require __DIR__ . '/src/Database.php'; require __DIR__ . '/src/Http.php'; require __DIR__ . '/src/Auth.php'; require __DIR__ . '/src/AdminBootstrap.php'; require __DIR__ . '/src/BillingCycle.php'; require __DIR__ . '/src/TransactionImport.php';
 
 header('Access-Control-Allow-Credentials: true');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
@@ -120,6 +120,22 @@ if ($path === '/api/categories' && $method === 'POST') { $name=trim(Http::body()
 // Pages of 50, as a bare list. with_total=1 wraps a page with the full match count for the ledger; all=1 returns every match for exports.
 if ($path === '/api/transactions' && $method === 'GET') { $where=['t.user_id=?'];$params=[$userId];foreach(['from'=>'t.occurred_on >= ?','to'=>'t.occurred_on <= ?','account_id'=>'(t.from_account_id=? OR t.to_account_id=?)','category_id'=>'t.category_id=?','type'=>'t.type=?'] as $key=>$clause)if(!empty($_GET[$key])){ $where[]=$clause; $params[]=$_GET[$key];if($key==='account_id')$params[]=$_GET[$key]; }$totals=null;if(!empty($_GET['with_total'])){$c=$pdo->prepare("SELECT COUNT(*) AS total, COALESCE(SUM(CASE WHEN t.type='expense' THEN t.amount_cents ELSE 0 END),0) AS spent_cents, COALESCE(SUM(CASE WHEN t.type='income' THEN t.amount_cents ELSE 0 END),0) AS earned_cents, COALESCE(SUM(CASE WHEN t.type='transfer' THEN t.amount_cents ELSE 0 END),0) AS moved_cents FROM transactions t WHERE ".implode(' AND ',$where));$c->execute($params);$totals=array_map('intval',$c->fetch());}$page=max(1,(int)($_GET['page']??1));$direction=($_GET['sort']??'desc')==='asc'?'ASC':'DESC';$all=!empty($_GET['all']);if(!$all){$params[] = 50; $params[] = ($page-1)*50;}$sql='SELECT t.*, fa.name from_account_name, ta.name to_account_name, c.name category_name FROM transactions t LEFT JOIN accounts fa ON fa.id=t.from_account_id LEFT JOIN accounts ta ON ta.id=t.to_account_id LEFT JOIN categories c ON c.id=t.category_id WHERE '.implode(' AND ',$where)." ORDER BY t.occurred_on $direction, t.id $direction".($all?'':' LIMIT ? OFFSET ?');$s=$pdo->prepare($sql);$s->execute($params);$rows=$s->fetchAll();Http::respond($totals===null?$rows:['rows'=>$rows,...$totals]); }
 if ($path === '/api/transactions' && $method === 'POST') { $d=validateTransaction($pdo,Http::body(),$userId);$s=$pdo->prepare('INSERT INTO transactions (user_id,type,amount_cents,occurred_on,is_historical,from_account_id,to_account_id,category_id,merchant,note,exclude_from_insights) VALUES (?,?,?,?,?,?,?,?,?,?,?)');$s->execute([$userId,...array_values($d)]);Http::respond(['id'=>(int)$pdo->lastInsertId(),...$d],201); }
+// Importing a file takes two requests: the first shows what would change, and the second saves it only if checking again gives the same answer.
+if ($path === '/api/transactions/import' && $method === 'POST') {
+    // A form on another site can't send this content type, which matters on a route that can change every transaction at once.
+    if (!str_starts_with(strtolower($_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? ''), 'application/json')) Http::fail('Send the transactions as JSON.', 415);
+    $b=Http::body(); $entries=$b['transactions']??null;
+    if (!is_array($entries) || !$entries || !array_is_list($entries)) Http::fail('There are no transactions to import.');
+    if (count($entries) > TransactionImport::LIMIT) Http::fail('Import at most '.number_format(TransactionImport::LIMIT).' transactions at a time.');
+    $s=$pdo->prepare('SELECT t.id,t.type,t.amount_cents,t.occurred_on,t.is_historical,t.from_account_id,t.to_account_id,t.category_id,t.merchant,t.note,t.exclude_from_insights,fa.name from_account_name,ta.name to_account_name,c.name category_name FROM transactions t LEFT JOIN accounts fa ON fa.id=t.from_account_id LEFT JOIN accounts ta ON ta.id=t.to_account_id LEFT JOIN categories c ON c.id=t.category_id WHERE t.user_id=? ORDER BY t.id'); $s->execute([$userId]);
+    // The database matches names, so a file finds whichever account or category the database would treat as the same name.
+    $named=function(string $table) use ($pdo,$userId){ $s=$pdo->prepare("SELECT id,name FROM $table WHERE user_id=? AND name=?"); return function(string $name) use ($s,$userId){ $s->execute([$userId,$name]); return $s->fetchAll(); }; };
+    $plan=TransactionImport::plan($entries,array_column($s->fetchAll(),null,'id'),$named('accounts'),$named('categories'));
+    if (empty($b['apply'])) Http::respond($plan);
+    if ($plan['error_count']) Http::fail('Fix the problems in the file before importing it.');
+    if (($b['fingerprint']??null)!==$plan['fingerprint']) Http::fail('Your transactions changed after this file was checked. Check it again before importing.',409);
+    Http::respond(TransactionImport::save($pdo,$userId,$plan));
+}
 if (preg_match('#^/api/transactions/(\d+)$#',$path,$m) && in_array($method,['PATCH','DELETE'],true)) { $id=(int)$m[1];$s=$pdo->prepare('SELECT * FROM transactions WHERE id=? AND user_id=?');$s->execute([$id,$userId]);$old=$s->fetch();if(!$old)Http::fail('Transaction not found.',404);if($method==='DELETE'){$pdo->prepare('DELETE FROM transactions WHERE id=? AND user_id=?')->execute([$id,$userId]);Http::respond(['ok'=>true]);}$d=validateTransaction($pdo,[...$old,...Http::body()],$userId);$pdo->prepare('UPDATE transactions SET type=?,amount_cents=?,occurred_on=?,is_historical=?,from_account_id=?,to_account_id=?,category_id=?,merchant=?,note=?,exclude_from_insights=? WHERE id=? AND user_id=?')->execute([...array_values($d),$id,$userId]);Http::respond(['id'=>$id,...$d]); }
 
 // Reporting: transfers never enter spending figures, and expenses hidden from insights are skipped unless include_hidden is set.
