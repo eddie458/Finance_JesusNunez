@@ -25,10 +25,10 @@ function reviewSummary(transactions, review, noun, currency) {
   return [`${counted.length} ${noun}${counted.length===1?'':'s'}`,earned>0&&`+${plainMoney(earned,currency)}`,spent>0&&`${earned>0?'−':''}${plainMoney(spent,currency)}`].filter(Boolean).join(' · ')
 }
 
-// focusKey changes when someone picks what to review, which is the only time the panel should scroll into view.
+// focusKey changes when someone picks what to review, which is the only time the panel should scroll into view. A month changed by the page filter keeps the key, so the page stays put.
 export function ReviewPanel({ title, noun='expense', transactions, loading, error, onClose, review, currency, focusKey, className='' }) {
-  const ref=useRef(null)
-  useEffect(()=>{if(focusKey&&!loading)ref.current?.scrollIntoView({behavior:'smooth',block:'nearest'})},[focusKey,loading])
+  const ref=useRef(null); const shownFor=useRef(null)
+  useEffect(()=>{if(!focusKey||loading||shownFor.current===focusKey)return;shownFor.current=focusKey;ref.current?.scrollIntoView({behavior:'smooth',block:'nearest'})},[focusKey,loading])
   return <section className={`tile review-tile ${className}`} ref={ref}><div className="insight-detail-head"><div style={{minWidth:0}}><h2>{title}</h2><p className="section-description">{loading?'Loading…':reviewSummary(transactions,review,noun,currency)}</p></div><div className="chart-actions">{transactions.length>0&&<button type="button" className="icon-button" title="Export these transactions as CSV" aria-label="Export these transactions as CSV" onClick={()=>exportTransactions(transactions,{name:[title],currency})}><Download size={18} strokeWidth={2.2}/></button>}<button type="button" className="icon-button" title="Close" aria-label="Close" onClick={onClose}><X size={18} strokeWidth={2.2}/></button></div></div>{loading?<div className="empty">Loading transactions…</div>:transactions.length?<div className="insight-list">{transactions.map(t=><ReviewRow key={t.id} transaction={t} review={review} currency={currency}/>)}</div>:error?<p className="error">{error.message}</p>:<div className="empty">Nothing recorded here.</div>}</section>
 }
 

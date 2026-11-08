@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Table2, BarChart3 } from 'lucide-react'
 import { useCategoryTrends } from '../../api/insights'
-import { daysInMonth, localToday, shiftMonth } from '../../lib/dates'
+import { daysInMonth, localToday, monthRange, monthWindow, shiftMonth } from '../../lib/dates'
 import { OTHER, SERIES, categoryColors } from '../../lib/palette'
 
 export { OTHER, SERIES }
-export const CHART = { surface:'#ffffff', grid:'#ece7f6', axis:'#c9c0d6', tick:'#6b5c78', cursor:'#f1eef8' }
+// chosen marks the month the page filter is on, a step darker than the hover cursor.
+export const CHART = { surface:'#ffffff', grid:'#ece7f6', axis:'#c9c0d6', tick:'#6b5c78', cursor:'#f1eef8', chosen:'#e7e0f7' }
 export const ON_LILAC = { surface:'#cdbdfb', grid:'rgba(36,17,47,.12)', axis:'rgba(36,17,47,.32)', tick:'#46356b', cursor:'rgba(36,17,47,.08)' }
 export const COLORS = { expenses:SERIES[0], income:SERIES[1], saved:'#24112f', netWorth:'#24112f', context:'#9c90a8' }
 export const axisTick = { fontSize:12.5, fontWeight:500, fill:CHART.tick }
@@ -22,6 +23,12 @@ export function axisTicks(highest) {
 
 // A year of category totals decides which category owns which color, on every screen.
 export const trendFilters = thisMonth => ({ from:`${shiftMonth(thisMonth,-11)}-01`, to:`${thisMonth}-${daysInMonth(thisMonth)}` })
+// The months a chart shows. They stay put while the chosen month is among them, so picking a month in the chart never moves it, and move to take in a month chosen outside them.
+export function useMonthWindow(month, count) {
+  const thisMonth=localToday().slice(0,7); const [end,setEnd]=useState(()=>monthWindow(month,thisMonth,count).at(-1)); const months=monthRange(shiftMonth(end,-(count-1)),end)
+  if (months.includes(month)) return months
+  const next=monthWindow(month,thisMonth,count); setEnd(next.at(-1)); return next
+}
 export function useCategoryColors() { const {data}=useCategoryTrends(trendFilters(localToday().slice(0,7))); return useMemo(()=>({...categoryColors(data??[]),ready:Boolean(data)}),[data]) }
 
 export function ChartCard({ title, description, legend, summary, table, children, className='' }) {

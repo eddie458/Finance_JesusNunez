@@ -84,6 +84,10 @@ If your database has a different name (for example on shared hosting), run only 
 
 On the Insights page, select a month or category to see the transactions behind it and switch any of them off, or use **Hide from insights** when adding or editing a transaction. Hidden transactions still change account balances, still count on the Overview page, and still count toward net worth and card use; they are only left out of the spending and cash-flow charts.
 
+## Looking at one month in Insights
+
+The **Month** filter at the top of the Insights page sets the month for the Spending and Cash flow tabs. You see that month’s spending pace against the month before, its expense breakdown and category pie, its income, spending and savings, and your net worth at its end. Charts that cover several months keep showing them and mark the chosen one. Selecting a month in a chart changes the filter too. **Cards** always shows the current statement.
+
 ## Exporting transactions
 
 On the Transactions page, set any filters, select **Export**, and choose **CSV** or **JSON**. The page opens on the current month, so choose **All months** to see or export everything. The file holds every transaction that matches, not just the rows on screen. On the Insights page, select a month or category and use the download button in the list that opens to export the transactions behind it as CSV, including any hidden from insights.

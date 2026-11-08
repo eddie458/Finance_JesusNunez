@@ -538,6 +538,7 @@ h1, h2, h3, p { margin: 0 }
   .filter-pills .pill-select { height: 44px }
   .pill-select select, .filter-pills .pill-select select { font-size: 16px } /* iOS zooms the page when a control's text is smaller */
   .clear-filters { flex: none }
+  .month-filter { flex-wrap: wrap; overflow-x: visible } /* two items, so they wrap rather than scroll */
   .tx-day { padding: 2px 14px }
   .tx-main { gap: 12px; min-height: 62px }
   .tx-main .chip { width: 44px; height: 44px }
